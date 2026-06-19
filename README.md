@@ -1,4 +1,4 @@
-*Este proyecto ha sido creado como parte del currículo de 42 por lupalomi y scamlett*
+*Este proyecto ha sido creado como parte del currículo de 42 por lupalomi y scamlett.*
 
 # A-maze-ing
 
