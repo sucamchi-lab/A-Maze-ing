@@ -77,12 +77,12 @@ texture.
 ### Pac-Man board — PERFECT=False (coming soon)
 
 
-
 ## Bonus
 
 
 ## Resources
-
+- https://medium.com/@icodewithben/solving-a-maze-using-depth-first-search-and-backtracking-142228603d1b
+- https://github.com/cu-sanjay/Maze-Solver/
 
 ## Contributions
 - `lupalomi`: Backend algorithms, output file, pathfinding, "42" pattern,
