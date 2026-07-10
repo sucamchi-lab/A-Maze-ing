@@ -12,6 +12,7 @@ from typing import Dict
 
 from mazegen.generator import MazeGenerator
 from mazegen.display import MazeDisplay
+from mazegen import output_file, shortest_path
 
 
 def parse_config(path: str) -> Dict[str, str]:
@@ -111,6 +112,10 @@ def main() -> None:
             perfect=perfect,
         )
         generator.generate()
+
+        walls = generator.get_walls()
+        path = shortest_path(walls, entry, exit_coords)
+        output_file(cfg["OUTPUT_FILE"], walls, entry, exit_coords, path)
     except ValueError as e:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
