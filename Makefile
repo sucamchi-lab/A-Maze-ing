@@ -31,5 +31,6 @@ lint-strict:
 
 build:
 	$(PYTHON) -m build
+	cp dist/*.whl .
 
 .PHONY: install run debug clean lint lint-strict build
