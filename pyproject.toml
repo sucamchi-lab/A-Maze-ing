@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=77"]
+requires = ["setuptools>=64"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -8,8 +8,7 @@ version = "1.0.0"
 requires-python = ">=3.10"
 description = "Maze generator and solver."
 readme = "mazegen/README.md"
-license = "MIT"
-license-files = ["LICENSE.md"]
+license = {file = "LICENSE.md"}
 authors = [
     {name = "lupalomi"},
     {name = "scamlett"},
@@ -17,3 +16,6 @@ authors = [
 
 [tool.setuptools.packages.find]
 include = ["mazegen*"]
+
+[tool.setuptools.package-data]
+mazegen = ["README.md"]
