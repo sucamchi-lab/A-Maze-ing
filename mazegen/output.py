@@ -43,18 +43,3 @@ def output_file(
         file.write(f"{entry[0]}, {entry[1]}\n")
         file.write(f"{map_exit[0]}, {map_exit[1]}\n")
         file.write(path + "\n")
-
-
-if __name__ == "__main__":
-    test_walls: List[List[int]] = [
-        [9, 3],
-        [12, 6],
-    ]
-
-    output_file(
-        "maze.txt",
-        test_walls,
-        (0, 0),
-        (1, 1),
-        "ES",
-    )

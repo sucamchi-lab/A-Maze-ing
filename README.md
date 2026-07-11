@@ -50,6 +50,8 @@ The program expects a config.txt file as its only argument.
    recursive backtracker carves passages until every cell is reachable.
 4. Hand the generated maze to `MazeDisplay`, which renders it as an ASCII
    grid and starts the interactive menu loop.
+5. Generates a solution using a BFS algorithm
+6. Generates a output file that includes a hexadecimal version of the map, the entry ubication, the exit ubication and the shortest path to exit in cardinal points (North, N; East, E; South, S; West, W)
 
 *(Output file writing to the hexadecimal format is not yet implemented.)*
 
@@ -77,12 +79,28 @@ texture.
 ### Pac-Man board — PERFECT=False (coming soon)
 
 
+### Breadth-First Search (BFS) - Shortest path to exit
+The function `shortest_path` defined in **solver.py** uses a BFS algorithm to find the first path to the exit, which is also the shortest path because all tiles have the same **movement cost**. In this function:
+
+- `Queue`: Represent the tiles pending to visit.
+- `Visited`: The tiles that has been already visited.
+- `Parent`: The tile used to reach the "key" value with the movement direction.
+
+#### Why not use DFS here?
+`DFS always tries to go as deep as posible` ('South' direction, ↓
+) which is perfect to generate laberithms but almost never guarantee that the solution path is also the shortest path to the exit.
+
+This is not the case of the BFS algorithm. BFS algorithm is pretty similar to `flood fill` algorithm. Both algorithms, `BFS and Flood Fill, roams all the tiles until find a condition to stop`. However the main difference is that BFS algorithm also save the `Parent` path to generate a coherent solution.
+
 ## Bonus
+*Not implemented yet*
 
 
 ## Resources
 - https://medium.com/@icodewithben/solving-a-maze-using-depth-first-search-and-backtracking-142228603d1b
 - https://github.com/cu-sanjay/Maze-Solver/
+- https://www.codecademy.com/article/breadth-first-search-bfs-algorithm
+- https://www.hackerearth.com/practice/algorithms/graphs/flood-fill-algorithm/tutorial/
 
 ## Contributions
 - `lupalomi`: Backend algorithms, output file, pathfinding, "42" pattern,
@@ -102,15 +120,26 @@ Susana 04/07–05/07:
   - MazeGenerator class — recursive backtracker
   - MazeDisplay class — terminal ASCII rendering, ANSI colour rotation,
   interactive menu
+  - shortest_path function — Implements BFS algorithm to find the shortest path to exit.
+  - output_file function — Generates a .txt file version that includes an hexadecimal version of the map, the entry ubication, the exit ubication and the solution provided by 'shortest_path' function
 - a_maze_ing.py — config file parser, CLI argument handling, error messages
 - README.md — description, instructions, execution flow, algorithms,
   to-do list
 - LICENSE.md
 
 
+Luis 06/07 - 10/07:
+- BFS maze solver (mazegen/solver.py ; function shortest_path)
+- Output file with hexadecimal format map, entry, exit and solution using cardinal points (N, E, S, W).
+
+Luis 11/07:
+- README update
+- Minor fixes: 'main' function deleted at solver.py 
+
+
 /////// LUIS TO-DO /////
-- Output file maze.txt (hex format) with maze_analyzer.py validation
-- Solution algorithm (shortest path BFS for example)
+- Implement new output_file at maze.regen()
+- Implement "show/hide shortest path"
 - "42" pattern
 - PERFECT=False Pac-Man board (v2.2 requirements)
 - Optional: Unit tests (pytest)
