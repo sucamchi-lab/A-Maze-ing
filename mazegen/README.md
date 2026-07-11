@@ -5,7 +5,7 @@ package** that can be imported and reused in a future project.  It
 exposes the ``MazeGenerator`` class through a clean public API.
 
 
-### Building the distributable paackage
+### Building the distributable package
 
 The package is built with the standard ``build`` tool, producing a
 ``mazegen-1.0.0-py3-none-any.whl`` at the **root** of the
