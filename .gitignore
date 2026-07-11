@@ -3,3 +3,4 @@ resources/
 venv/
 .mypy_cache/
 output_maze.txt
+mazegen.egg-info/
