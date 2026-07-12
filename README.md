@@ -37,7 +37,7 @@ The program expects a config.txt file as its only argument.
 | Key | Action |
 |-----|--------|
 | `1` | Re-generate a new random maze |
-| `2` | Show / hide the shortest path (coming soon) |
+| `2` | Show / hide the shortest path |
 | `3` | Cycle through wall colours |
 | `4` | Quit |
 
@@ -52,8 +52,6 @@ The program expects a config.txt file as its only argument.
    grid and starts the interactive menu loop.
 5. Generates a solution using a BFS algorithm
 6. Generates a output file that includes a hexadecimal version of the map, the entry ubication, the exit ubication and the shortest path to exit in cardinal points (North, N; East, E; South, S; West, W)
-
-*(Output file writing to the hexadecimal format is not yet implemented.)*
 
 ## Algorithms used
 
@@ -136,10 +134,10 @@ Luis 11/07:
 - README update
 - Minor fixes: 'main' function deleted at solver.py 
 
+Luis 12/07:
+- Show/Hide solution implementation in display
 
 /////// LUIS TO-DO /////
-- Implement new output_file at maze.regen()
-- Implement "show/hide shortest path"
 - "42" pattern
 - PERFECT=False Pac-Man board (v2.2 requirements)
 - Optional: Unit tests (pytest)

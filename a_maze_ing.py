@@ -120,7 +120,7 @@ def main() -> None:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
 
-    display = MazeDisplay(generator)
+    display = MazeDisplay(generator, cfg["OUTPUT_FILE"])
     display.run()
 
 

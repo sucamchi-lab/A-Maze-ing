@@ -10,19 +10,15 @@ DIRECTIONS = [
 ]
 
 
-"""
-shortest_path:
-
-Roams the entire map searching the shortest path to the exit. When
-the exit is found, returns 'rebuild_path(parent, entry, exit)'.
-"""
-
-
 def shortest_path(
     walls: List[List[int]],
     entry: Tuple[int, int],
     map_exit: Tuple[int, int]
 ) -> str:
+    """
+    Roams the entire map searching the shortest path to the exit. When
+    the exit is found, returns 'rebuild_path(parent, entry, exit)'.
+    """
     height = len(walls)
     width = len(walls[0])
     queue: Deque[Tuple[int, int]] = deque([entry])
@@ -53,20 +49,16 @@ def shortest_path(
     raise ValueError("No valid path found from entry to exit")
 
 
-"""
-rebuild_path:
-
-This function start at the end and recreates the solution returning
-a string that indicates, by order, the cardinal points from the begining
-to the end
-"""
-
-
 def rebuild_path(
     parent: Dict[Tuple[int, int], Tuple[Tuple[int, int], str]],
     entry: Tuple[int, int],
     map_exit: Tuple[int, int]
 ) -> str:
+    """
+    This function start at the end and recreates the solution returning
+    a string that indicates, by order, the cardinal points from the begining
+    to the end
+    """
     current = map_exit
     path = ""
 
