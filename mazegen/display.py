@@ -146,7 +146,7 @@ class MazeDisplay:
         # Place corners (every (cw+1) columns, every (ch+1) rows)
         for cy in range(0, canvas_h, ch + 1):
             for cx in range(0, canvas_w, cw + 1):
-                canvas[cy][cx] = "+"
+                canvas[cy][cx] = "█"
 
         # For each cell, draw its north and west walls
         # (south and east are drawn by neighboring cells)
@@ -160,7 +160,7 @@ class MazeDisplay:
                 # North wall
                 if cell & 1:   # north closed
                     for i in range(1, cw + 1):
-                        canvas[ty][tx + i] = "-"
+                        canvas[ty][tx + i] = "█"
                 else:
                     for i in range(1, cw + 1):
                         canvas[ty][tx + i] = " "
@@ -168,7 +168,7 @@ class MazeDisplay:
                 # West wall
                 if cell & 8:   # west closed
                     for i in range(1, ch + 1):
-                        canvas[ty + i][tx] = "|"
+                        canvas[ty + i][tx] = "█"
                 else:
                     for i in range(1, ch + 1):
                         canvas[ty + i][tx] = " "
@@ -192,7 +192,7 @@ class MazeDisplay:
             ty = (h - 1) * (ch + 1)
             if cell & 4:   # south closed
                 for i in range(1, cw + 1):
-                    canvas[ty + ch + 1][tx + i] = "-"
+                    canvas[ty + ch + 1][tx + i] = "█"
             else:
                 for i in range(1, cw + 1):
                     canvas[ty + ch + 1][tx + i] = " "
@@ -204,7 +204,7 @@ class MazeDisplay:
             ty = y * (ch + 1)
             if cell & 2:   # east closed
                 for i in range(1, ch + 1):
-                    canvas[ty + i][tx + cw + 1] = "|"
+                    canvas[ty + i][tx + cw + 1] = "█"
             else:
                 for i in range(1, ch + 1):
                     canvas[ty + i][tx + cw + 1] = " "

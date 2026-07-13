@@ -257,6 +257,7 @@ Luis 12/07:
 - Show/Hide solution implementation in display
 
 /////// LUIS TO-DO /////
+- Solve problem when Entry/Exit are in borders
 - "42" pattern
 - PERFECT=False Pac-Man board (v2.2 requirements)
 - Optional: Unit tests (pytest)
@@ -265,6 +266,7 @@ Luis 12/07:
 //// SUSI TO-DO /////
 - Rewrite and simplify generator algorithm
 - Bonus: extra graphics / animations
+- Diferent colours at show/hide solution path
 - README.md final version:
   - Config file format documentation
   - Why the recursive backtracker was chosen

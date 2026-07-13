@@ -15,7 +15,7 @@ def hex_converter(walls: List[List[int]]) -> List[str]:
     for row in walls:
         line = ""
         for tile in row:
-            line += format(tile, "X")
+            line += format(tile, "x")
         lines.append(line)
     return lines
 
