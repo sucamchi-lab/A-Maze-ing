@@ -5,9 +5,11 @@ terminal using box-drawing characters and ANSI color codes.
 """
 
 import sys
-from typing import List
+from typing import List, Set, Tuple
 
 from mazegen.generator import MazeGenerator
+from mazegen.solver import shortest_path
+from mazegen.output import output_file
 
 # ── ANSI escape codes ──────────────────────────────────────────────
 
@@ -49,7 +51,8 @@ class MazeDisplay:
     _CELL_W = 3  # interior width in characters
     _CELL_H = 1  # interior height in characters
 
-    def __init__(self, generator: MazeGenerator) -> None:
+    def __init__(self, generator: MazeGenerator,
+                 output_name: str = "output_maze.txt") -> None:
         """Initialize the display with a maze generator.
 
         Args:
@@ -58,7 +61,14 @@ class MazeDisplay:
         """
         self.generator: MazeGenerator = generator
         self.color_index: int = 0
+        self.output_name = output_name
         self.show_path: bool = False
+        self.path: str = shortest_path(
+            self.generator.get_walls(),
+            self.generator.get_entry(),
+            self.generator.get_exit(),
+        )
+        self.path_cells: Set[Tuple[int, int]] = self.get_path_cells(self.path)
 
     # ── Public helpers ─────────────────────────────────────────
 
@@ -66,15 +76,42 @@ class MazeDisplay:
         """Re-generate the maze with a new random seed."""
         self.generator.seed = None
         self.generator.generate()
+        self.path = shortest_path(
+            self.generator.get_walls(),
+            self.generator.get_entry(),
+            self.generator.get_exit()
+            )
+        self.path_cells = self.get_path_cells(self.path)
+        output_file(
+            self.output_name,
+            self.generator.get_walls(),
+            self.generator.get_entry(),
+            self.generator.get_exit(),
+            self.path
+            )
 
     def rotate_color(self) -> None:
         """Advance to the next wall color in the palette."""
         self.color_index = (self.color_index + 1) % len(_COLORS)
 
+    def get_path_cells(self, path: str) -> Set[Tuple[int, int]]:
+        x, y = self.generator.get_entry()
+        path_cells: Set[Tuple[int, int]] = {(x, y)}
+
+        for movement in path:
+            if movement == "N":
+                y -= 1
+            elif movement == "E":
+                x += 1
+            elif movement == "S":
+                y += 1
+            elif movement == "W":
+                x -= 1
+            path_cells.add((x, y))
+        return path_cells
+
     def toggle_path(self) -> None:
         """Toggle the solution path overlay.
-        Pathfinding is not yet implemented
-        TODO: implement pathfinding and overlay rendering.
         """
         self.show_path = not self.show_path
 
@@ -142,6 +179,8 @@ class MazeDisplay:
                     interior = " E "
                 elif (x, y) == exit_cell:
                     interior = " X "
+                elif self.show_path and (x, y) in self.path_cells:
+                    interior = " * "
 
                 for i, ch_char in enumerate(interior):
                     canvas[ty + 1][tx + 1 + i] = ch_char
@@ -198,12 +237,6 @@ class MazeDisplay:
                 self.regen()
             elif choice == "2":
                 self.toggle_path()
-                if self.show_path:
-                    print(
-                        "\n(path display not yet implemented — "
-                        "coming soon!)"
-                    )
-                    input("Press Enter to continue...")
             elif choice == "3":
                 self.rotate_color()
             elif choice == "4":
