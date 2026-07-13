@@ -55,7 +55,6 @@ The program expects a config.txt file as its only argument.
 
 ## Algorithms used
 
-*not yet implemented*
 
 ### Recursive backtracker (DFS) — PERFECT=True
 
@@ -76,21 +75,21 @@ cells, with no loops and no isolated areas. The algorithm is simple,
 well-documented, and produces mazes with a characteristic long-corridor
 texture.
 
-### Pac-Man board — PERFECT=False (coming soon)
+### Pac-Man board — PERFECT=False 
 
+*Not implemented yet*
 
 ### Breadth-First Search (BFS) - Shortest path to exit
 The function `shortest_path` defined in **solver.py** uses a BFS algorithm to find the first path to the exit, which is also the shortest path because all tiles have the same **movement cost**. In this function:
 
 - `Queue`: Represent the tiles pending to visit.
-- `Visited`: The tiles that has been already visited.
+- `Visited`: The tiles which have already been visited.
 - `Parent`: The tile used to reach the "key" value with the movement direction.
 
 #### Why not use DFS here?
-`DFS always tries to go as deep as posible` ('South' direction, ↓
-) which is perfect to generate laberithms but almost never guarantee that the solution path is also the shortest path to the exit.
+`DFS always tries to go as deep as posible` ('South' direction, ↓) which is perfect for generating mazes but almost never guarantees that the solution path is also the shortest path to the exit.
 
-This is not the case of the BFS algorithm. BFS algorithm is pretty similar to `flood fill` algorithm. Both algorithms, `BFS and Flood Fill, roams all the tiles until find a condition to stop`. However the main difference is that BFS algorithm also save the `Parent` path to generate a coherent solution.
+This is not the case of the BFS algorithm, which is pretty similar to `flood fill` algorithm. Both algorithms roam all the tiles until they find a condition to stop. However, the main difference is that BFS algorithm also saves the `Parent` path to generate a coherent solution with the shortest possible path.
 
 
 ## Reusable ``mazegen`` package
@@ -261,6 +260,10 @@ Luis 13/07:
 - Adjustments in output.py and display.py
 - Missing Entry/Exit wall borders problem solved
 
+Susana 13/07:
+- Fix README
+- Different colours at show/hide solution path
+
 /////// LUIS TO-DO /////
 - "42" pattern
 - PERFECT=False Pac-Man board (v2.2 requirements)
@@ -269,8 +272,7 @@ Luis 13/07:
 
 //// SUSI TO-DO /////
 - Rewrite and simplify generator algorithm
-- Bonus: extra graphics / animations
-- Diferent colours at show/hide solution path
+- Bonus: extra graphics / animations (option 5)
 - README.md final version:
   - Config file format documentation
   - Why the recursive backtracker was chosen

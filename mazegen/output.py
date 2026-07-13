@@ -1,14 +1,10 @@
 from typing import List, Tuple
 
 
-"""
-hex_converter:
-
-Turns the map lines into hexadecimal.
-"""
-
-
 def hex_converter(walls: List[List[int]]) -> List[str]:
+    """
+    Turns the map lines into hexadecimal.
+    """
     lines: List[str] = []
     line: str = ""
 
@@ -20,14 +16,6 @@ def hex_converter(walls: List[List[int]]) -> List[str]:
     return lines
 
 
-"""
-output_file:
-
-Uses 'hex_converter' function to turn the map, line by line, to hexadecimal
-and saving the result of each line in the 'filename' variable
-"""
-
-
 def output_file(
     filename: str,
     walls: List[List[int]],
@@ -35,6 +23,10 @@ def output_file(
     map_exit: Tuple[int, int],
     path: str
 ) -> None:
+    """
+    Uses 'hex_converter' function to turn the map, line by line, to hexadecimal
+    and saving the result of each line in the 'filename' variable
+    """
     lines = hex_converter(walls)
     with open(filename, "w", encoding="utf-8") as file:
         for line in lines:

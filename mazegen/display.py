@@ -80,7 +80,7 @@ class MazeDisplay:
             self.generator.get_walls(),
             self.generator.get_entry(),
             self.generator.get_exit()
-            )
+        )
         self.path_cells = self.get_path_cells(self.path)
         output_file(
             self.output_name,
@@ -88,7 +88,7 @@ class MazeDisplay:
             self.generator.get_entry(),
             self.generator.get_exit(),
             self.path
-            )
+        )
 
     def rotate_color(self) -> None:
         """Advance to the next wall color in the palette."""
@@ -180,7 +180,7 @@ class MazeDisplay:
                 elif (x, y) == exit_cell:
                     interior = " X "
                 elif self.show_path and (x, y) in self.path_cells:
-                    interior = " * "
+                    interior = " ● "
 
                 for i, ch_char in enumerate(interior):
                     canvas[ty + 1][tx + 1 + i] = ch_char
@@ -209,12 +209,15 @@ class MazeDisplay:
                 for i in range(1, ch + 1):
                     canvas[ty + i][tx + cw + 1] = " "
 
-        # Apply color
-        color = _COLORS[self.color_index]
+        # Apply color: walls use current color, path uses next colour
+        wall_color = _COLORS[self.color_index]
+        path_color = _COLORS[(self.color_index + 1) % len(_COLORS)]
         lines = []
         for row in canvas:
             line = "".join(row)
-            lines.append(f"{color}{line}{_RESET}")
+            if self.show_path:
+                line = line.replace("●", f"{path_color}●{wall_color}")
+            lines.append(f"{wall_color}{line}{_RESET}")
         return "\n".join(lines)
 
     # ── Interactive loop ───────────────────────────────────────
