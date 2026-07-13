@@ -256,8 +256,12 @@ Luis 11/07:
 Luis 12/07:
 - Show/Hide solution implementation in display
 
+Luis 13/07:
+- Merge with main branch.
+- Adjustments in output.py and display.py
+- Missing Entry/Exit wall borders problem solved
+
 /////// LUIS TO-DO /////
-- Solve problem when Entry/Exit are in borders
 - "42" pattern
 - PERFECT=False Pac-Man board (v2.2 requirements)
 - Optional: Unit tests (pytest)

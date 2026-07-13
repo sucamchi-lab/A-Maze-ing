@@ -155,28 +155,6 @@ class MazeGenerator:
             else:
                 stack.pop()
 
-        # Open entry and exit walls at the border
-        ex, ey = self.entry
-        xx, xy = self.exit
-
-        if ey == 0:          # entry on top border
-            self._walls[ey][ex] &= ~1
-        elif ey == h - 1:    # entry on bottom border
-            self._walls[ey][ex] &= ~4
-        if ex == 0:          # entry on left border
-            self._walls[ey][ex] &= ~8
-        elif ex == w - 1:    # entry on right border
-            self._walls[ey][ex] &= ~2
-
-        if xy == 0:          # exit on top border
-            self._walls[xy][xx] &= ~1
-        elif xy == h - 1:    # exit on bottom border
-            self._walls[xy][xx] &= ~4
-        if xx == 0:          # exit on left border
-            self._walls[xy][xx] &= ~8
-        elif xx == w - 1:    # exit on right border
-            self._walls[xy][xx] &= ~2
-
     def get_walls(self) -> List[List[int]]:
         """Return the maze wall grid.
 
