@@ -147,8 +147,7 @@ class MazeGenerator:
                 for dx, dy, mw, tw in self._DIRECTIONS:
                     if (nx - cx, ny - cy) == (dx, dy):
                         # Remove walls between current and neighbor
-                        self._walls[cy][cx] &= ~mw
-                        self._walls[ny][nx] &= ~tw
+                        self.open_wall(cx, cy, nx, ny, mw, tw)
                         break
                 visited[ny][nx] = True
                 stack.append((nx, ny))
@@ -175,3 +174,118 @@ class MazeGenerator:
     def get_exit(self) -> Tuple[int, int]:
         """Return the exit coordinates as ``(x, y)``."""
         return self.exit
+
+    def open_wall(
+            self,
+            x: int,
+            y: int,
+            nx: int,
+            ny: int,
+            my_wall: int,
+            their_wall: int
+    ) -> None:
+        """Remove walls between current and neighbor"""
+        self._walls[y][x] &= ~my_wall
+        self._walls[ny][nx] &= ~their_wall
+
+    def closed_neighbours(self, x: int, y: int
+                          ) -> List[Tuple[int, int, int, int]]:
+        neighbours: List[Tuple[int, int, int, int]] = []
+        for dx, dy, my_wall, their_wall in self._DIRECTIONS:
+            nx = x + dx
+            ny = y + dy
+            if not (0 <= nx < self.width and 0 <= ny < self.height):
+                continue
+            if self._walls[y][x] & my_wall:
+                neighbours.append((nx, ny, my_wall, their_wall))
+        return neighbours
+
+    def passage_count(self, x: int, y: int) -> int:
+        """Return the amount of paths to one cell."""
+        count = 0
+
+        for dx, dy, my_wall, _ in self._DIRECTIONS:
+            nx = x + dx
+            ny = y + dy
+            if not (0 <= nx < self.width and 0 <= ny < self.height):
+                continue
+            if not self._walls[y][x] & my_wall:
+                count += 1
+        return count
+
+    def open_key_cells(self, rng: random.Random) -> None:
+        """Ensure corners and centre have at least two open passages."""
+        key_cells: List[Tuple[int, int]] = [
+            (0, 0),
+            (self.width - 1, 0),
+            (0, self.height - 1),
+            (self.width - 1, self.height - 1),
+            (self.width // 2, self.height // 2),
+        ]
+        for x, y in key_cells:
+            while self.passage_count(x, y) < 2:
+                candidates = self.closed_neighbours(x, y)
+                if not candidates:
+                    break
+                nx, ny, my_wall, their_wall = rng.choice(candidates)
+                self.open_wall(x, y, nx, ny, my_wall, their_wall)
+
+    def braid_dead_ends(self, rng: random.Random, max: int = 2) -> None:
+        """Open walls until a few dead-ends remains"""
+        dead_ends: List[Tuple[int, int]] = [
+            (x, y)
+            for y in range(self.height)
+            for x in range(self.width)
+            if self.passage_count(x, y) == 1
+        ]
+        rng.shuffle(dead_ends)
+        while len(dead_ends) > max:
+            x, y = dead_ends.pop()
+            candidates = self.closed_neighbours(x, y)
+            if not candidates:
+                continue
+            nx, ny, my_wall, their_wall = rng.choice(candidates)
+            self.open_wall(x, y, nx, ny, my_wall, their_wall)
+            dead_ends = []
+            dead_ends = [
+                (cx, cy)
+                for cy in range(self.height)
+                for cx in range(self.width)
+                if self.passage_count(cx, cy) == 1
+            ]
+            rng.shuffle(dead_ends)
+
+    def count_open_paths(self) -> int:
+        """Count open passages between neighbouring cells."""
+        passages = 0
+
+        for y in range(self.height):
+            for x in range(self.width):
+                if (x + 1 < self.width and not self._walls[y][x] & 2):
+                    passages += 1
+                if (y + 1 < self.height and not self._walls[y][x] & 4):
+                    passages += 1
+        return passages
+
+    def count_loops(self) -> int:
+        """Return the number of independent loops in the maze."""
+        cells = self.width * self.height
+        passages = self.count_open_paths()
+        return passages - cells + 1
+
+    def ensure_minimum_loops(self, rng: random.Random, minimum: int = 2
+                             ) -> None:
+        """Open walls until the maze has enough independent loops."""
+        candidates: List[Tuple[int, int, int, int, int, int]] = []
+        for y in range(self.height):
+            for x in range(self.width):
+                if (x + 1 < self.width and self._walls[y][x] & 2):
+                    candidates.append((x, y, x + 1, y, 2, 8))
+                if (y + 1 < self.height and self._walls[y][x] & 4):
+                    candidates.append((x, y, x, y + 1, 4, 1))
+        rng.shuffle(candidates)
+        while self.count_loops() < minimum and candidates:
+            x, y, nx, ny, my_wall, their_wall = candidates.pop()
+            self.open_wall(x, y, nx, ny, my_wall, their_wall)
+        if self.count_loops() < minimum:
+            raise ValueError("Maze is too small to create the required loops")
