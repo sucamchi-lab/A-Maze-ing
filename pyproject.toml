@@ -8,7 +8,8 @@ version = "1.0.0"
 requires-python = ">=3.10"
 description = "Maze generator and solver."
 readme = "mazegen/README.md"
-license = {file = "LICENSE.md"}
+license = "MIT"
+license-files = ["LICENSE.md"]
 authors = [
     {name = "lupalomi"},
     {name = "scamlett"},
