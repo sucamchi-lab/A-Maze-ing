@@ -1,7 +1,7 @@
 """Terminal ASCII maze display with interactive menu.
 
 Provides the MazeDisplay class that renders a maze to the
-terminal using box-drawing characters and ANSI color codes.
+terminal using ASCII characters and ANSI color codes.
 """
 
 import sys
@@ -33,8 +33,7 @@ class MazeDisplay:
 
     Supports an interactive menu loop with four actions:
     1. Re-generate a new maze
-    2. Show/hide the shortest path (placeholder — pathfinding not yet
-       implemented)
+    2. Show/hide the shortest path
     3. Rotate wall colors
     4. Quit
 
@@ -46,8 +45,7 @@ class MazeDisplay:
     """
 
     # Each maze cell is rendered as 3 chars wide × 1 char tall
-    # (the interior is 3 spaces).  Corners are '+' and walls are
-    # '---' (horizontal) or '|' (vertical).
+    # (the interior is 3 spaces)
     _CELL_W = 3  # interior width in characters
     _CELL_H = 1  # interior height in characters
 
