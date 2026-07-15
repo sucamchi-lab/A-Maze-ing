@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """A-Maze-ing — Maze generator with terminal visualization.
-Reads a configuration file and launches an interactive terminal
+Reads and parses config file and launches an interactive terminal
 display of the generated maze.
 
 Usage:
@@ -33,6 +33,8 @@ def parse_config(path: str) -> Dict[str, str]:
     with open(path, "r", encoding="utf-8") as fh:
         for line_number, raw in enumerate(fh, start=1):
             line = raw.strip()
+            if not line:
+                continue
             if "=" not in line:
                 raise ValueError(
                     f"{path}:{line_number}: invalid line (missing '='): "
