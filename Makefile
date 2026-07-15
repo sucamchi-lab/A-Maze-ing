@@ -23,7 +23,7 @@ clean:
 
 lint:
 	$(FLAKE8) .
-	$(MYPY) .
+	$(MYPY) . --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 
 lint-strict:
 	$(FLAKE8) .
