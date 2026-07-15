@@ -1,9 +1,7 @@
 """Mazegen package
-
-Provides the MazeGenerator class for creating mazes and
-MazeDisplay for terminal ASCII visualization.
-
-Used in the a_maze_ing.py script.
+Export the necessary classes and functions to
+generate, display, and solve mazes.
+Used in a-maze-ing.py script.
 """
 
 from mazegen.generator import MazeGenerator

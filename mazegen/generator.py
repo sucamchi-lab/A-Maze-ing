@@ -7,7 +7,7 @@ mazes in two modes:
   cells — produced by a standard recursive backtracker.
 - **Playable / Pac-Man board** (``PERFECT=False``): a maze with
   loops, open corners and centre, and minimal dead-ends, suitable
-  for a Pac-Man-like game.  *(Not yet implemented.)*
+  for a Pac-Man-like game.
 """
 
 import random
@@ -28,13 +28,6 @@ class MazeGenerator:
     A bit set to 1 means the wall is **closed** (present).
     This format matches the hexadecimal output specified in the subject.
 
-    Two generation modes are supported:
-
-    - **Perfect** (``True``): recursive backtracker produces exactly
-      one path between any two cells.
-    - **Playable** (``False``): Pac-Man-style board with loops, open
-      corners/centre, and minimal dead-ends.  *(Not yet implemented.)*
-
     Attributes:
         width: Number of cells horizontally.
         height: Number of cells vertically.
@@ -44,7 +37,7 @@ class MazeGenerator:
         perfect: Whether to generate a perfect maze (default ``True``).
     """
 
-    # Direction constants: (dx, dy, wall_bit, opposite_wall_bit)
+    # Direction constants: (dx, dy, wall_bit, neighbour_wall_bit)
     _DIRECTIONS: List[Tuple[int, int, int, int]] = [
         (0, -1, 1, 4),   # North: my north wall, neighbor's south wall
         (1, 0, 2, 8),    # East:  my east wall,  neighbor's west wall
@@ -62,20 +55,6 @@ class MazeGenerator:
         perfect: bool = True,
     ) -> None:
         """Initialize the maze generator.
-
-        Args:
-            width: Number of cells horizontally (must be >= 2).
-            height: Number of cells vertically (must be >= 2).
-            entry: (x, y) coordinates of the entry cell.
-            exit: (x, y) coordinates of the exit cell.
-            seed: Random seed for reproducible generation.
-                Pass ``None`` for a random (non-reproducible) maze.
-            perfect: If ``True`` (default), generate a perfect maze
-                (exactly one path between any two cells).  If
-                ``False``, generate a Pac-Man-style playable board
-                with loops.  *(Non-perfect mode is not yet
-                implemented.)*
-
         Raises:
             ValueError: If dimensions are too small or entry/exit
                 are out of bounds.
@@ -121,12 +100,12 @@ class MazeGenerator:
 
         # Start with all walls closed (0xF = 1111 binary)
         self._walls = [[0xF for _ in range(w)] for _ in range(h)]
-
+        # Use a local random generator
         rng = random.Random(self.seed)
+        # Use a stack to implement the recursive backtracker algorithm
         visited: List[List[bool]] = [
             [False for _ in range(w)] for _ in range(h)
         ]
-
         # Use an explicit stack instead of recursion to avoid
         # hitting Python's recursion limit on large mazes.
         stack: List[Tuple[int, int]] = [(0, 0)]
@@ -140,13 +119,14 @@ class MazeGenerator:
                 nx, ny = cx + dx, cy + dy
                 if 0 <= nx < w and 0 <= ny < h and not visited[ny][nx]:
                     neighbors.append((nx, ny, my_wall))
-
+            # If there are unvisited neighbors,
+            # choose one at random and carve a passage
             if neighbors:
                 nx, ny, my_wall = rng.choice(neighbors)
                 # Find the direction to get the opposite wall bit
                 for dx, dy, mw, tw in self._DIRECTIONS:
                     if (nx - cx, ny - cy) == (dx, dy):
-                        # Remove walls between current and neighbor
+                        # Open and remove walls between current and neighbor
                         self._walls[cy][cx] &= ~mw
                         self._walls[ny][nx] &= ~tw
                         break
