@@ -12,10 +12,10 @@ Two generation modes are supported (controlled by the ``PERFECT`` config key):
 
 - **Perfect maze** (``PERFECT=True``): exactly one path between any two
   cells — no loops, no unreachable areas.  Generated with a recursive
-  backtracker (DFS).  *(Implemented.)*
+  backtracker (DFS).
 - **Pac-Man board** (``PERFECT=False``): a playable maze with loops, open
   corners and centre, and minimal dead-ends — suitable for a Pac-Man-like
-  game.  *(Not yet implemented.)*
+  game.
 
 The project is built around a reusable ``mazegen`` package that can be
 installed via pip and imported into other projects.
@@ -39,7 +39,35 @@ The program expects a config.txt file as its only argument.
 | `1` | Re-generate a new random maze |
 | `2` | Show / hide the shortest path |
 | `3` | Cycle through wall colours |
-| `4` | Quit |
+| `4` | Show DFS generation animation |
+| `5` | Quit |
+
+## Config file format
+
+The program reads a single configuration file (default: ``config.txt``).
+Every line follows the ``KEY=VALUE`` pattern:
+
+```
+WIDTH=20
+HEIGHT=15
+ENTRY=0,0
+EXIT=19,14
+OUTPUT_FILE=output_maze.txt
+PERFECT=True
+```
+
+| Key            | Format              | Description                              |
+|----------------|---------------------|------------------------------------------|
+| ``WIDTH``      | positive integer    | Maze width in cells (≥ 2).               |
+| ``HEIGHT``     | positive integer    | Maze height in cells (≥ 2).              |
+| ``ENTRY``      | ``x,y``             | Coordinates of the entry cell.           |
+| ``EXIT``       | ``x,y``             | Coordinates of the exit cell.            |
+| ``OUTPUT_FILE``| filename            | Path where the hex output is written.    |
+| ``PERFECT``    | ``True`` / ``False``| ``True`` = perfect maze; ``False`` = Pac‑Man board. |
+
+All keys are **mandatory**.  Entry and exit must be different cells
+and must lie within the maze bounds.  The parser strips whitespace and
+ignores empty lines.
 
 ## Execution flow
 
@@ -56,7 +84,7 @@ The program expects a config.txt file as its only argument.
 ## Algorithms used
 
 
-### Recursive backtracker (DFS) — PERFECT=True
+### DFS maze generator — PERFECT=True
 
 The maze generator uses a **depth-first search with an explicit stack** (no
 recursion, to avoid hitting Python's recursion limit on large mazes).
@@ -74,6 +102,19 @@ This guarantees a **perfect maze** — exactly one path connects any two
 cells, with no loops and no isolated areas. The algorithm is simple,
 well-documented, and produces mazes with a characteristic long-corridor
 texture.
+
+#### Why DFS?
+
+- **Guaranteed connectivity** — every cell is reachable from every other
+  cell, with no isolated areas.  The maze is always solvable.
+- **Simplicity** — the algorithm is easy to understand, implement, and
+  debug.  Using an explicit stack avoids Python's recursion limit on
+  large mazes while keeping the logic clear.
+- **Well-studied** — recursive backtracker is one of the most common
+  maze generation algorithms, with abundant documentation and examples
+  available for reference.
+- **Perfect maze** — exactly one path connects any two
+  cells, with no loops and no isolated areas.
 
 ### Pac-Man board — PERFECT=False 
 
@@ -97,6 +138,19 @@ This is not the case of the BFS algorithm, which is pretty similar to `flood fil
 The ``mazegen/`` directory is a **self-contained, pip-installable Python
 package** that can be imported and reused in a future project.  It
 exposes the ``MazeGenerator`` class through a clean public API.
+
+### What is reusable and how
+
+| Module                        | Reusable component         | How to reuse it                                          |
+|-------------------------------|----------------------------|----------------------------------------------------------|
+| ``mazegen/generator.py``      | ``MazeGenerator`` class    | Import to create and generate mazes in any Python project. |
+| ``mazegen/solver.py``         | ``shortest_path()``        | Pass any valid walls grid to get a BFS solution string.    |
+| ``mazegen/display.py``        | ``MazeDisplay`` class      | Embed the interactive terminal viewer.    |
+| ``mazegen/display.py``        | ``render_walls()``         | Render any walls grid to a plain ASCII string (no colours).|
+| ``mazegen/output.py``         | ``output_file()``          | Write a maze + solution to disk in the project's hex format.|
+| ``mazegen/output.py``         | ``hex_converter()``        | Convert a walls grid to hex strings line by line.          |
+| ``mazegen/bonus_mazegen_animation.py`` | ``animate_dfs()`` | Show a step-by-step DFS generation animation for any walls grid. |
+
 
 
 ### Building the distributable package
@@ -203,7 +257,11 @@ print(f"Cell (0,0) walls: {walls[0][0]:04b}")
 ```
 
 ## Bonus
-*Not implemented yet*
+
+- **DFS generation animation** — option `4` in the interactive menu
+  replays the recursive-backtracker algorithm step by step, showing how
+  walls are carved in real time.  Implemented in
+  ``mazegen/bonus_mazegen_animation.py``.
 
 
 ## Resources
@@ -212,11 +270,44 @@ print(f"Cell (0,0) walls: {walls[0][0]:04b}")
 - https://www.codecademy.com/article/breadth-first-search-bfs-algorithm
 - https://www.hackerearth.com/practice/algorithms/graphs/flood-fill-algorithm/tutorial/
 
-## Contributions
-- `lupalomi`: Backend algorithms, output file, pathfinding, "42" pattern,
-  Pac-Man board mode.
-- `scamlett`: Project setup, maze generation core, terminal display,
-  README & documentation, package build, visual polish.
+AI was used in a responsible manner as a tutor and to assist in algorithm generation, error handling and README.md formatting.
+All code has been fully reviewed and is understood by both partners.
+
+## Team and project management
+
+### Contribution
+
+- **lupalomi (Luis)** — Backend algorithms: BFS solver, output file
+  generation, hex conversion, and Pac-Man board mode design.
+- **scamlett (Susana)** — Project setup and architecture: maze generation
+  core, terminal display, DFS animation bonus, package build, README and documentation.
+
+### Planning and how it evolved
+
+Our initial plan was to split the work along two tracks: **generation & display** (Susana) and **algorithms & output** (Luis).
+
+### What worked well
+
+- **Clear separation of work** - Work and responsabilities were divided in a way that we would avoid affecting our partner's progress.
+- **Git management** — we used different branches to develop our code,which kept the codebase in a working state at all times.
+- **Linting from day one** — flake8 and mypy were configured in the
+  Makefile from the start, catching issues early and avoiding a painful
+  cleanup at the end.
+
+### What could be improved
+- **Pac-Man board mode** — we underestimated the complexity and it took     more time than expected, and involved heavy code refactoring.
+
+### Tools used
+
+| Tool              | Purpose                                        |
+|-------------------|------------------------------------------------|
+| ``venv``          | Isolated virtual environment.                  |
+| ``flake8``        | Code style linting (PEP 8).                    |
+| ``mypy``          | Static type checking.                          |
+| ``build``         | PEP 517 package builder (wheel + sdist).       |
+| ``make``          | Task runner (install, lint, build, run, clean).|
+| Git / GitHub      | Version control and collaboration.             |
+| VS Code           | Editor, with flake8 + mypy integrated.         |
 
 ## Contribution diary
 Susana 19/06:
@@ -243,7 +334,6 @@ Susana 11/07:
 - Add documentation for reusable package
 - Test package generation (create .whl at repo root)
 
-
 Luis 06/07 - 10/07:
 - BFS maze solver (mazegen/solver.py ; function shortest_path)
 - Output file with hexadecimal format map, entry, exit and solution using cardinal points (N, E, S, W).
@@ -264,6 +354,13 @@ Susana 13/07:
 - Fix README
 - Different colours at show/hide solution path
 
+Susana 15/07:
+- Rewrite and comment display.py and generator.py
+- BONUS = Full animation for DFS maze generation
+- Polish README.md, add extra sections
+- Ran multiple unit tests to catch bugs
+- Fix empty line parsing in config.txt
+
 /////// LUIS TO-DO /////
 - "42" pattern
 - PERFECT=False Pac-Man board (v2.2 requirements)
@@ -271,11 +368,6 @@ Susana 13/07:
 - Bonus: extra algorithms or zero dead-end braided board (v2.2 bonus)
 
 //// SUSI TO-DO /////
-- Rewrite and simplify generator algorithm
-- Bonus: extra graphics / animations (option 5)
 - README.md final version:
-  - Config file format documentation
-  - Why the recursive backtracker was chosen
-  - Reusable module docs (instantiation, parameters, accessing structure)
   - Team roles, planning evolution, what worked / could improve
   - Resources section
