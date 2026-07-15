@@ -6,7 +6,6 @@ def hex_converter(walls: List[List[int]]) -> List[str]:
     Turns the map lines into hexadecimal.
     """
     lines: List[str] = []
-    line: str = ""
 
     for row in walls:
         line = ""
