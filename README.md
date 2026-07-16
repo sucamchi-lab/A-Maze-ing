@@ -321,8 +321,6 @@ Susana 04/07–05/07:
   - MazeGenerator class — recursive backtracker
   - MazeDisplay class — terminal ASCII rendering, ANSI colour rotation,
   interactive menu
-  - shortest_path function — Implements BFS algorithm to find the shortest path to exit.
-  - output_file function — Generates a .txt file version that includes an hexadecimal version of the map, the entry ubication, the exit ubication and the solution provided by 'shortest_path' function
 - a_maze_ing.py — config file parser, CLI argument handling, error messages
 - README.md — description, instructions, execution flow, algorithms,
   to-do list
