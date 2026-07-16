@@ -76,8 +76,12 @@ well-documented, and produces mazes with a characteristic long-corridor
 texture.
 
 ### Pac-Man board — PERFECT=False 
+Generates a DFS maze and then:
 
-*Not implemented yet*
+1. **Search and secures open corners and the center of the maze.**
+2. **Search and eliminate almost every the dead-end of the maze, leaving only 2 intact.**
+
+The algorithm used here is exactly the same that the **`PERFECT=TRUE`** uses (DFS) but with a few extra steps.
 
 ### Breadth-First Search (BFS) - Shortest path to exit
 The function `shortest_path` defined in **solver.py** uses a BFS algorithm to find the first path to the exit, which is also the shortest path because all tiles have the same **movement cost**. In this function:
@@ -211,6 +215,8 @@ print(f"Cell (0,0) walls: {walls[0][0]:04b}")
 - https://github.com/cu-sanjay/Maze-Solver/
 - https://www.codecademy.com/article/breadth-first-search-bfs-algorithm
 - https://www.hackerearth.com/practice/algorithms/graphs/flood-fill-algorithm/tutorial/
+- https://medium.com/@ja.harr91/exploring-the-pacman-maze-understanding-optimizing-breadth-first-search-depth-first-search-in-5e354b5d149b
+- https://stackoverflow.com/questions/12225981/how-to-create-a-random-pacman-maze
 
 ## Contributions
 - `lupalomi`: Backend algorithms, output file, pathfinding, "42" pattern,
@@ -264,9 +270,11 @@ Susana 13/07:
 - Fix README
 - Different colours at show/hide solution path
 
+Luis 16/07:
+- PERFECT=False Pac-Man board (*With a lot of suffering*).
+
 /////// LUIS TO-DO /////
 - "42" pattern
-- PERFECT=False Pac-Man board (v2.2 requirements)
 - Optional: Unit tests (pytest)
 - Bonus: extra algorithms or zero dead-end braided board (v2.2 bonus)
 

@@ -153,6 +153,8 @@ class MazeGenerator:
                 stack.append((nx, ny))
             else:
                 stack.pop()
+            if not self.perfect:
+                self.pac_man_maze(rng)
 
     def get_walls(self) -> List[List[int]]:
         """Return the maze wall grid.
@@ -175,15 +177,8 @@ class MazeGenerator:
         """Return the exit coordinates as ``(x, y)``."""
         return self.exit
 
-    def open_wall(
-            self,
-            x: int,
-            y: int,
-            nx: int,
-            ny: int,
-            my_wall: int,
-            their_wall: int
-    ) -> None:
+    def open_wall(self, x: int, y: int, nx: int, ny: int, my_wall: int,
+                  their_wall: int) -> None:
         """Remove walls between current and neighbor"""
         self._walls[y][x] &= ~my_wall
         self._walls[ny][nx] &= ~their_wall
@@ -214,7 +209,7 @@ class MazeGenerator:
         return count
 
     def open_key_cells(self, rng: random.Random) -> None:
-        """Ensure corners and centre have at least two open passages."""
+        """Ensure corners and centre have, at least, two open passages."""
         key_cells: List[Tuple[int, int]] = [
             (0, 0),
             (self.width - 1, 0),
@@ -230,62 +225,45 @@ class MazeGenerator:
                 nx, ny, my_wall, their_wall = rng.choice(candidates)
                 self.open_wall(x, y, nx, ny, my_wall, their_wall)
 
-    def braid_dead_ends(self, rng: random.Random, max: int = 2) -> None:
-        """Open walls until a few dead-ends remains"""
-        dead_ends: List[Tuple[int, int]] = [
+    def choose_dead_end_connection(self, rng: random.Random,
+                                   candidates: List[Tuple[int, int, int, int]],
+                                   dead_ends: List[Tuple[int, int]],
+                                   ) -> Tuple[int, int, int, int]:
+        """Literally, choose a closed wall"""
+        dead_end_set = set(dead_ends)
+        dead_end_candidates = [
+            candidate
+            for candidate in candidates
+            if (candidate[0], candidate[1]) in dead_end_set
+        ]
+        if dead_end_candidates:
+            return rng.choice(dead_end_candidates)
+        return rng.choice(candidates)
+
+    def reduce_dead_ends(self, rng: random.Random, maxi: int = 2) -> None:
+        """Open internal walls until only a few dead-ends remain."""
+        dead_ends = [
             (x, y)
             for y in range(self.height)
             for x in range(self.width)
             if self.passage_count(x, y) == 1
         ]
-        rng.shuffle(dead_ends)
-        while len(dead_ends) > max:
-            x, y = dead_ends.pop()
-            candidates = self.closed_neighbours(x, y)
-            if not candidates:
-                continue
-            nx, ny, my_wall, their_wall = rng.choice(candidates)
-            self.open_wall(x, y, nx, ny, my_wall, their_wall)
-            dead_ends = []
-            dead_ends = [
-                (cx, cy)
-                for cy in range(self.height)
-                for cx in range(self.width)
-                if self.passage_count(cx, cy) == 1
-            ]
+        while len(dead_ends) > maxi:
             rng.shuffle(dead_ends)
-
-    def count_open_paths(self) -> int:
-        """Count open passages between neighbouring cells."""
-        passages = 0
-
-        for y in range(self.height):
-            for x in range(self.width):
-                if (x + 1 < self.width and not self._walls[y][x] & 2):
-                    passages += 1
-                if (y + 1 < self.height and not self._walls[y][x] & 4):
-                    passages += 1
-        return passages
-
-    def count_loops(self) -> int:
-        """Return the number of independent loops in the maze."""
-        cells = self.width * self.height
-        passages = self.count_open_paths()
-        return passages - cells + 1
-
-    def ensure_minimum_loops(self, rng: random.Random, minimum: int = 2
-                             ) -> None:
-        """Open walls until the maze has enough independent loops."""
-        candidates: List[Tuple[int, int, int, int, int, int]] = []
-        for y in range(self.height):
-            for x in range(self.width):
-                if (x + 1 < self.width and self._walls[y][x] & 2):
-                    candidates.append((x, y, x + 1, y, 2, 8))
-                if (y + 1 < self.height and self._walls[y][x] & 4):
-                    candidates.append((x, y, x, y + 1, 4, 1))
-        rng.shuffle(candidates)
-        while self.count_loops() < minimum and candidates:
-            x, y, nx, ny, my_wall, their_wall = candidates.pop()
+            x, y = dead_ends[0]
+            candidates = self.closed_neighbours(x, y)
+            selected = self.choose_dead_end_connection(rng, candidates,
+                                                       dead_ends)
+            nx, ny, my_wall, their_wall = selected
             self.open_wall(x, y, nx, ny, my_wall, their_wall)
-        if self.count_loops() < minimum:
-            raise ValueError("Maze is too small to create the required loops")
+            dead_ends = [
+                (x, y)
+                for y in range(self.height)
+                for x in range(self.width)
+                if self.passage_count(x, y) == 1
+            ]
+
+    def pac_man_maze(self, rng: random.Random) -> None:
+        """Transform a perfect maze into a pac-man maze"""
+        self.open_key_cells(rng)
+        self.reduce_dead_ends(rng, maxi=2)
