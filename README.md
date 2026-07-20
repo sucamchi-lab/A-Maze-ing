@@ -207,7 +207,8 @@ print(f"Cell (0,0) walls: {walls[0][0]:04b}")
 ```
 
 ## Bonus
-*Not implemented yet*
+### Dead-end braided board
+As you possibly noticed, `PERFECT=FALSE` mazes doesn't have any dead-end. This is archived thanks to the `reduce_dead_ends` function. This function can be set with a `maximun` of any `int` value, **including 0**. This, also, doesn't work with a `PERFECT=TRUE` maze. This way, the bonus part is archived.
 
 
 ## Resources
@@ -273,10 +274,13 @@ Susana 13/07:
 Luis 16/07:
 - PERFECT=False Pac-Man board (*With a lot of suffering*).
 
+Luis 20/07:
+- "42" pattern implemented successfully.
+- Dead-end braided board implemented (BONUS PART)
+- Multiple fixes due to small mazes and some edge cases.
+
 /////// LUIS TO-DO /////
-- "42" pattern
 - Optional: Unit tests (pytest)
-- Bonus: extra algorithms or zero dead-end braided board (v2.2 bonus)
 
 //// SUSI TO-DO /////
 - Rewrite and simplify generator algorithm
