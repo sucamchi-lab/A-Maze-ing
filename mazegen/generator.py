@@ -304,11 +304,7 @@ class MazeGenerator:
     def pac_man_maze(self, rng: random.Random) -> None:
         """
         Transform a perfect maze into a pac-man maze.
-        Then, reduce the number of dead-ends to a maximum of 2
-        (or 0 for bonus-grade maze).
+        Then, reduce the number of dead-ends to 0
         """
         self.open_key_cells(rng)
-        if (self.width <= 8 or self.height <= 6) and not self.perfect:
-            self.reduce_dead_ends(rng, maxi=0)
-        else:
-            self.reduce_dead_ends(rng, maxi=2)
+        self.reduce_dead_ends(rng, maxi=0)

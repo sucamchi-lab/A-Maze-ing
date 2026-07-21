@@ -186,7 +186,4 @@ def animate_dfs(
                     return
 
         open_key_cells()
-        if width <= 8 or height <= 6:
-            reduce_dead_ends(maxi=0)
-        else:
-            reduce_dead_ends(maxi=2)
+        reduce_dead_ends(maxi=0)

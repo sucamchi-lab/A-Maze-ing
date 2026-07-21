@@ -154,6 +154,7 @@ exposes the ``MazeGenerator`` class through a clean public API.
 | ``mazegen/output.py``         | ``output_file()``          | Write a maze + solution to disk in the project's hex format.|
 | ``mazegen/output.py``         | ``hex_converter()``        | Convert a walls grid to hex strings line by line.          |
 | ``mazegen/bonus_mazegen_animation.py`` | ``animate_dfs()`` | Show a step-by-step DFS generation animation for any walls grid. |
+|``mazegen/pattern42.py`` | ``get_pattern()`` | Return tiles occupied by the fixed 42 pattern. |
 
 
 
@@ -309,6 +310,7 @@ Our initial plan was to split the work along two tracks: **generation & display*
 
 ### What could be improved
 - **Pac-Man board mode** — we underestimated the complexity and it took     more time than expected, and involved heavy code refactoring.
+- **'42' pattern** — Introduce the pattern into the maze should be an easy thing, no? ... **IT WASN'T**
 
 ### Tools used
 
@@ -385,10 +387,5 @@ Susana 21/07:
 - Improve code comments
 - Add colour INSIDE 42 pattern.
 
-/////// LUIS TO-DO /////
-- Optional: Unit tests (pytest)
-- Fix dead-ends when 42 pattern is not generated correctly.
-
-//// SUSI TO-DO /////
-- README.md final version:
-
+Luis 21/07:
+-  Fix dead-ends when 42 pattern is not generated correctly.
