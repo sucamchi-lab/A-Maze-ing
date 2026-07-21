@@ -391,5 +391,4 @@ Susana 21/07:
 
 //// SUSI TO-DO /////
 - README.md final version:
-  - Polish README.md
 
