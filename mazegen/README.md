@@ -36,15 +36,15 @@ pip install mazegen-1.0.0-py3-none-any.whl
 ```python
 from mazegen import MazeGenerator
 
-# Create a 20×10 perfect maze with random seed
-gen = MazeGenerator(width=20, height=10)
+# Create a 20×10 perfect maze
+gen = MazeGenerator(width=20, height=10, entry=(0, 0), exit=(19, 9))
 gen.generate()                          # carve the passages
 
 # Access the generated structure
 walls = gen.get_walls()                 # 2D list of 4-bit wall bitmasks
 w, h = gen.get_dimensions()             # (20, 10)
-entry = gen.get_entry()                 # (0, 0) by default
-exit_cell = gen.get_exit()              # (19, 9) e.g. bottom-right
+entry = gen.get_entry()                 # (0, 0)
+exit_cell = gen.get_exit()              # (19, 9)
 ```
 
 #### Custom parameters
@@ -97,13 +97,18 @@ walls = gen.get_walls()
 
 ```python
 from mazegen import MazeGenerator
+from mazegen.display import render_walls
 
-gen = MazeGenerator(width=15, height=10, entry=(0, 0), exit=(14, 9), seed=42)
-gen.generate()
 
-print(f"Maze: {gen.get_dimensions()}")
-print(f"Entry: {gen.get_entry()}, Exit: {gen.get_exit()}")
+def main() -> None:
+    gen = MazeGenerator(width=15, height=10, entry=(0, 0),
+                        exit=(14, 9), seed=42)
+    gen.generate()
+    width, height = gen.get_dimensions()
+    print(render_walls(gen.get_walls(), width, height,
+                       gen.get_entry(), gen.get_exit()))
 
-walls = gen.get_walls()
-print(f"Cell (0,0) walls: {walls[0][0]:04b}")
+
+if __name__ == "__main__":
+    main()
 ```

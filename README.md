@@ -249,15 +249,20 @@ walls = gen.get_walls()
 
 ```python
 from mazegen import MazeGenerator
+from mazegen.display import render_walls
 
-gen = MazeGenerator(width=15, height=10, entry=(0, 0), exit=(14, 9), seed=42)
-gen.generate()
 
-print(f"Maze: {gen.get_dimensions()}")
-print(f"Entry: {gen.get_entry()}, Exit: {gen.get_exit()}")
+def main() -> None:
+    gen = MazeGenerator(width=15, height=10, entry=(0, 0),
+                        exit=(14, 9), seed=42)
+    gen.generate()
+    width, height = gen.get_dimensions()
+    print(render_walls(gen.get_walls(), width, height,
+                       gen.get_entry(), gen.get_exit()))
 
-walls = gen.get_walls()
-print(f"Cell (0,0) walls: {walls[0][0]:04b}")
+
+if __name__ == "__main__":
+    main()
 ```
 
 ## Bonus
