@@ -11,7 +11,8 @@ mazes in two modes:
 """
 
 import random
-from typing import List, Tuple
+from typing import List, Tuple, Set
+from mazegen.pattern42 import get_pattern
 
 
 class MazeGenerator:
@@ -87,6 +88,7 @@ class MazeGenerator:
 
         # walls[y][x] — bitmask of closed walls (0–15)
         self._walls: List[List[int]] = []
+        self._pattern = get_pattern(self.width, self.height)
 
     def generate(self) -> None:
         """Run the maze generation algorithm.
@@ -97,25 +99,53 @@ class MazeGenerator:
         """
         w = self.width
         h = self.height
+        pattern: Set[Tuple[int, int]] = get_pattern(w, h)
 
         # Start with all walls closed (0xF = 1111 binary)
         self._walls = [[0xF for _ in range(w)] for _ in range(h)]
         # Use a local random generator
         rng = random.Random(self.seed)
-        # Use a stack to implement the recursive backtracker algorithm
-        visited: List[List[bool]] = [
-            [False for _ in range(w)] for _ in range(h)
+
+        # Checks if the pattern can be introduced inside the maze
+        if not pattern:
+            print(
+                "\nWarning - The '42 pattern' wasn't placed "
+                "due to lack of space"
+            )
+        elif self.entry in pattern:
+            print(
+                "\nWarning - The '42 pattern' wasn't placed "
+                "due to overlap with the entry tile"
+            )
+            pattern = set()
+        elif self.exit in pattern:
+            print(
+                "\nWarning - The '42 pattern' wasn't placed "
+                "due to overlap with the exit tile"
+            )
+            pattern = set()
+
+        self._pattern = pattern
+        centre = (w // 2, h // 2)
+
+        visited = [
+            [
+                (x, y) in self._pattern and (x, y) != centre
+                for x in range(w)
+            ]
+            for y in range(h)
         ]
         # Use an explicit stack instead of recursion to avoid
         # hitting Python's recursion limit on large mazes.
-        stack: List[Tuple[int, int]] = [(0, 0)]
-        visited[0][0] = True
+        start_x, start_y = self.entry
+        stack: List[Tuple[int, int]] = [(start_x, start_y)]
+        visited[start_y][start_x] = True
 
         while stack:
             cx, cy = stack[-1]
             # Gather unvisited neighbors
             neighbors: List[Tuple[int, int, int]] = []
-            for dx, dy, my_wall, their_wall in self._DIRECTIONS:
+            for dx, dy, my_wall, _ in self._DIRECTIONS:
                 nx, ny = cx + dx, cy + dy
                 if 0 <= nx < w and 0 <= ny < h and not visited[ny][nx]:
                     neighbors.append((nx, ny, my_wall))
@@ -126,14 +156,15 @@ class MazeGenerator:
                 # Find the direction to get the opposite wall bit
                 for dx, dy, mw, tw in self._DIRECTIONS:
                     if (nx - cx, ny - cy) == (dx, dy):
-                        # Open and remove walls between current and neighbor
-                        self._walls[cy][cx] &= ~mw
-                        self._walls[ny][nx] &= ~tw
+                        # Remove walls between current and neighbor
+                        self.open_wall(cx, cy, nx, ny, mw, tw)
                         break
                 visited[ny][nx] = True
                 stack.append((nx, ny))
             else:
                 stack.pop()
+        if not self.perfect:
+            self.pac_man_maze(rng)
 
     def get_walls(self) -> List[List[int]]:
         """Return the maze wall grid.
@@ -155,3 +186,129 @@ class MazeGenerator:
     def get_exit(self) -> Tuple[int, int]:
         """Return the exit coordinates as ``(x, y)``."""
         return self.exit
+
+    # ¡ESTAS FUNCIONES SON EXCLUSIVAS DEL PAC-MAN!
+    def open_wall(self, x: int, y: int, nx: int, ny: int, my_wall: int,
+                  their_wall: int) -> bool:
+        """Remove walls between current and neighbour"""
+        centre = (self.width // 2, self.height // 2)
+        if (((x, y) in self._pattern and (x, y) != centre) or
+           ((nx, ny) in self._pattern and (nx, ny) != centre)):
+            return False
+        self._walls[y][x] &= ~my_wall
+        self._walls[ny][nx] &= ~their_wall
+        return True
+
+    def closed_neighbours(self, x: int, y: int
+                          ) -> List[Tuple[int, int, int, int]]:
+        """Returns a list of the neighbours whose walls are closed"""
+        neighbours: List[Tuple[int, int, int, int]] = []
+        centre = (self.width // 2, self.height // 2)
+        if (x, y) in self._pattern and (x, y) != centre:
+            return neighbours
+        for dx, dy, my_wall, their_wall in self._DIRECTIONS:
+            nx = x + dx
+            ny = y + dy
+            if not (0 <= nx < self.width and 0 <= ny < self.height):
+                continue
+            if (nx, ny) in self._pattern and (nx, ny) != centre:
+                continue
+            if self._walls[y][x] & my_wall:
+                neighbours.append((nx, ny, my_wall, their_wall))
+        return neighbours
+
+    def passage_count(self, x: int, y: int) -> int:
+        """Return the amount of paths to one cell."""
+        count = 0
+
+        for dx, dy, my_wall, _ in self._DIRECTIONS:
+            nx = x + dx
+            ny = y + dy
+            if not (0 <= nx < self.width and 0 <= ny < self.height):
+                continue
+            if not self._walls[y][x] & my_wall:
+                count += 1
+        return count
+
+    def open_key_cells(self, rng: random.Random) -> None:
+        """Ensure corners and centre have, at least, two open passages."""
+        key_cells: List[Tuple[int, int]] = [
+            (0, 0),
+            (self.width - 1, 0),
+            (0, self.height - 1),
+            (self.width - 1, self.height - 1),
+            (self.width // 2, self.height // 2),
+        ]
+        for x, y in key_cells:
+            centre = (self.width // 2, self.height // 2)
+            if (x, y) in self._pattern and (x, y) != centre:
+                continue
+            while self.passage_count(x, y) < 2:
+                candidates = self.closed_neighbours(x, y)
+                if not candidates:
+                    break
+                nx, ny, my_wall, their_wall = rng.choice(candidates)
+                if not self.open_wall(x, y, nx, ny, my_wall, their_wall):
+                    break
+
+    def choose_dead_end_connection(self, rng: random.Random,
+                                   candidates: List[Tuple[int, int, int, int]],
+                                   dead_ends: List[Tuple[int, int]],
+                                   ) -> Tuple[int, int, int, int]:
+        """Literally, choose a closed wall"""
+        dead_end_set = set(dead_ends)
+        dead_end_candidates = [
+            candidate
+            for candidate in candidates
+            if (candidate[0], candidate[1]) in dead_end_set
+        ]
+        if dead_end_candidates:
+            return rng.choice(dead_end_candidates)
+        return rng.choice(candidates)
+
+    def reduce_dead_ends(self, rng: random.Random, maxi: int = 2) -> None:
+        """Open internal walls until only a few dead-ends remain."""
+        aux: bool = False
+        candidates: List[Tuple[int, int, int, int]]
+
+        while True:
+            dead_ends: List[Tuple[int, int]] = [
+                (x, y)
+                for y in range(self.height)
+                for x in range(self.width)
+                if ((
+                        (x, y) not in self._pattern
+                        or
+                        (x, y) == (self.width // 2, self.height // 2)
+                    )
+                    and self.passage_count(x, y) == 1)
+            ]
+            if len(dead_ends) <= maxi:
+                return
+            rng.shuffle(dead_ends)
+            aux = False
+            for x, y in dead_ends:
+                candidates = self.closed_neighbours(x, y)
+                if not candidates:
+                    continue
+                selected = self.choose_dead_end_connection(rng, candidates,
+                                                           dead_ends)
+                nx, ny, my_wall, their_wall = selected
+                if self.open_wall(x, y, nx, ny, my_wall, their_wall):
+                    aux = True
+                    break
+            if not aux:
+                return
+
+    # ¡ATENCIÓN! Actualmente esta seteado para un braided-zero por
+    # lo que, si se desea, se puede cambiar sumando 2 a cada 'maxi'
+    def pac_man_maze(self, rng: random.Random) -> None:
+        """
+        Transform a perfect maze into a pac-man maze.
+        Yhen, reduce the dead-ends
+        """
+        self.open_key_cells(rng)
+        if (self.width <= 8 or self.height <= 6) and not self.perfect:
+            self.reduce_dead_ends(rng, maxi=0)
+        else:
+            self.reduce_dead_ends(rng, maxi=2)

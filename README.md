@@ -117,8 +117,12 @@ texture.
   cells, with no loops and no isolated areas.
 
 ### Pac-Man board — PERFECT=False 
+Generates a DFS maze and then:
 
-*Not implemented yet*
+1. **Search and secures open corners and the center of the maze.**
+2. **Search and eliminate almost every the dead-end of the maze, leaving only 2 intact.**
+
+The algorithm used here is exactly the same that the **`PERFECT=TRUE`** uses (DFS) but with a few extra steps.
 
 ### Breadth-First Search (BFS) - Shortest path to exit
 The function `shortest_path` defined in **solver.py** uses a BFS algorithm to find the first path to the exit, which is also the shortest path because all tiles have the same **movement cost**. In this function:
@@ -263,12 +267,16 @@ print(f"Cell (0,0) walls: {walls[0][0]:04b}")
   walls are carved in real time.  Implemented in
   ``mazegen/bonus_mazegen_animation.py``.
 
+- **Dead-end braided board** — As you possibly noticed, `PERFECT=FALSE` mazes doesn't have any dead-end. This is archived thanks to the `reduce_dead_ends` function. This function can be set with a `maximun` of any `int` value, **including 0**. This, also, doesn't work with a `PERFECT=TRUE` maze. This way, the bonus part is archived.
+
 
 ## Resources
 - https://medium.com/@icodewithben/solving-a-maze-using-depth-first-search-and-backtracking-142228603d1b
 - https://github.com/cu-sanjay/Maze-Solver/
 - https://www.codecademy.com/article/breadth-first-search-bfs-algorithm
 - https://www.hackerearth.com/practice/algorithms/graphs/flood-fill-algorithm/tutorial/
+- https://medium.com/@ja.harr91/exploring-the-pacman-maze-understanding-optimizing-breadth-first-search-depth-first-search-in-5e354b5d149b
+- https://stackoverflow.com/questions/12225981/how-to-create-a-random-pacman-maze
 
 AI was used in a responsible manner as a tutor and to assist in algorithm generation, error handling and README.md formatting.
 All code has been fully reviewed and is understood by both partners.
@@ -359,13 +367,19 @@ Susana 15/07:
 - Ran multiple unit tests to catch bugs
 - Fix empty line parsing in config.txt
 
+Luis 16/07:
+- PERFECT=False Pac-Man board (*With a lot of suffering*).
+
+Luis 20/07:
+- "42" pattern implemented successfully.
+- Dead-end braided board implemented (BONUS PART)
+- Multiple fixes due to small mazes and some edge cases.
+
 /////// LUIS TO-DO /////
-- "42" pattern
-- PERFECT=False Pac-Man board (v2.2 requirements)
 - Optional: Unit tests (pytest)
-- Bonus: extra algorithms or zero dead-end braided board (v2.2 bonus)
 
 //// SUSI TO-DO /////
 - README.md final version:
   - Team roles, planning evolution, what worked / could improve
   - Resources section
+- Change '42' pattern colours / Make it distinctive

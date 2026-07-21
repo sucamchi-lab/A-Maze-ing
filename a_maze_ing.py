@@ -94,15 +94,7 @@ def main() -> None:
         print(f"Error: invalid config value — {e}", file=sys.stderr)
         sys.exit(1)
 
-    # PERFECT and OUTPUT_FILE are parsed but not fully used yet
     perfect = cfg["PERFECT"].upper() == "TRUE"
-
-    if not perfect:
-        print(
-            "Note: PERFECT=False (Pac-Man board mode) is not yet "
-            "implemented; generating a perfect maze instead.",
-            file=sys.stderr,
-        )
 
     try:
         generator = MazeGenerator(
