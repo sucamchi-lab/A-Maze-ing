@@ -1,13 +1,11 @@
 """Maze generator using recursive backtracker (DFS).
 
-This module provides the MazeGenerator class that creates
-mazes in two modes:
+Provides the MazeGenerator class that create mazes in two modes:
 
 - **Perfect** (``PERFECT=True``): exactly one path between any two
   cells — produced by a standard recursive backtracker.
-- **Playable / Pac-Man board** (``PERFECT=False``): a maze with
-  loops, open corners and centre, and minimal dead-ends, suitable
-  for a Pac-Man-like game.
+- **Pac-Man board** (``PERFECT=False``): a maze with
+  loops, open corners and centre, and minimal dead-ends.
 """
 
 import random
@@ -26,7 +24,8 @@ class MazeGenerator:
     - Bit 2 (4): South wall
     - Bit 3 (8): West wall
 
-    A bit set to 1 means the wall is **closed** (present).
+    A bit set to 1 means the wall is **closed**,
+    while a bit set to 0 means the wall is **open**.
     This format matches the hexadecimal output specified in the subject.
 
     Attributes:
@@ -85,8 +84,6 @@ class MazeGenerator:
         self.exit: Tuple[int, int] = exit
         self.seed: int | None = seed
         self.perfect: bool = perfect
-
-        # walls[y][x] — bitmask of closed walls (0–15)
         self._walls: List[List[int]] = []
         self._pattern = get_pattern(self.width, self.height)
 
@@ -106,7 +103,7 @@ class MazeGenerator:
         # Use a local random generator
         rng = random.Random(self.seed)
 
-        # Checks if the pattern can be introduced inside the maze
+        # Checks if the 42 pattern can be placed correctly.
         if not pattern:
             print(
                 "\nWarning - The '42 pattern' wasn't placed "
@@ -187,7 +184,11 @@ class MazeGenerator:
         """Return the exit coordinates as ``(x, y)``."""
         return self.exit
 
-    # ¡ESTAS FUNCIONES SON EXCLUSIVAS DEL PAC-MAN!
+    def get_pattern(self) -> Set[Tuple[int, int]]:
+        """Return the set of cells occupied by the 42 pattern."""
+        return self._pattern
+
+    # Exclusive Pac-Man maze functions below
     def open_wall(self, x: int, y: int, nx: int, ny: int, my_wall: int,
                   their_wall: int) -> bool:
         """Remove walls between current and neighbour"""
@@ -277,10 +278,10 @@ class MazeGenerator:
                 for y in range(self.height)
                 for x in range(self.width)
                 if ((
-                        (x, y) not in self._pattern
-                        or
-                        (x, y) == (self.width // 2, self.height // 2)
-                    )
+                    (x, y) not in self._pattern
+                    or
+                    (x, y) == (self.width // 2, self.height // 2)
+                )
                     and self.passage_count(x, y) == 1)
             ]
             if len(dead_ends) <= maxi:
@@ -300,12 +301,11 @@ class MazeGenerator:
             if not aux:
                 return
 
-    # ¡ATENCIÓN! Actualmente esta seteado para un braided-zero por
-    # lo que, si se desea, se puede cambiar sumando 2 a cada 'maxi'
     def pac_man_maze(self, rng: random.Random) -> None:
         """
         Transform a perfect maze into a pac-man maze.
-        Yhen, reduce the dead-ends
+        Then, reduce the number of dead-ends to a maximum of 2
+        (or 0 for bonus-grade maze).
         """
         self.open_key_cells(rng)
         if (self.width <= 8 or self.height <= 6) and not self.perfect:

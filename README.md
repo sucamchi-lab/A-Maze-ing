@@ -375,11 +375,16 @@ Luis 20/07:
 - Dead-end braided board implemented (BONUS PART)
 - Multiple fixes due to small mazes and some edge cases.
 
+Susana 21/07:
+- Fix animation code for Perfect = True and Perfect = False with "42" pattern
+- Improve code comments
+- Add colour INSIDE 42 pattern.
+
 /////// LUIS TO-DO /////
 - Optional: Unit tests (pytest)
+- Fix dead-ends when 42 pattern is not generated correctly.
 
 //// SUSI TO-DO /////
 - README.md final version:
-  - Team roles, planning evolution, what worked / could improve
-  - Resources section
-- Change '42' pattern colours / Make it distinctive
+  - Polish README.md
+

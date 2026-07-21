@@ -41,6 +41,7 @@ def render_walls(
     entry: Tuple[int, int],
     exit_cell: Tuple[int, int],
     path_cells: Set[Tuple[int, int]] | None = None,
+    pattern_cells: Set[Tuple[int, int]] | None = None,
 ) -> str:
     """Render a maze walls grid as a plain ASCII string (no colors).
 
@@ -51,6 +52,7 @@ def render_walls(
         entry: Entry coordinates ``(x, y)``.
         exit_cell: Exit coordinates ``(x, y)``.
         path_cells: Optional cells to highlight with ``●``.
+        pattern_cells: Fills in the 42 pattern cells with ``▓``
 
     Returns:
         Multi-line ASCII string.
@@ -69,7 +71,7 @@ def render_walls(
     for cy in range(0, canvas_h, ch + 1):
         for cx in range(0, canvas_w, cw + 1):
             canvas[cy][cx] = "█"
-
+    # Fill in walls and interiors
     for y in range(height):
         for x in range(width):
             cell = walls[y][x]
@@ -92,7 +94,7 @@ def render_walls(
                 for i in range(1, ch + 1):
                     canvas[ty + i][tx] = " "
 
-            # Interior marker
+            # Special markers: entry, exit, path, and pattern fill
             interior = "   "
             if (x, y) == entry:
                 interior = " E "
@@ -100,7 +102,9 @@ def render_walls(
                 interior = " X "
             elif path_cells and (x, y) in path_cells:
                 interior = " ● "
-
+            elif pattern_cells and (x, y) in pattern_cells:
+                interior = "▓▓▓"
+            # Fill in the interior of the cell
             for i, ch_char in enumerate(interior):
                 canvas[ty + 1][tx + 1 + i] = ch_char
 
@@ -206,17 +210,13 @@ class MazeDisplay:
 
     def animate_dfs(self) -> None:
         """Run the DFS maze generation animation in the terminal."""
-        w = self.generator.width
-        h = self.generator.height
-        # Reset walls so the animation starts from a fully closed maze
+        # Reset walls so the animation starts from a fully closed maze.
         self.generator._walls = [
-            [0xF for _ in range(w)] for _ in range(h)
+            [0xF for _ in range(self.generator.width)]
+            for _ in range(self.generator.height)
         ]
         animate_dfs(
-            self.generator._walls,            self.generator.width,
-            self.generator.height,            self.generator.get_entry(),
-            self.generator.get_exit(),
-            self.generator.seed,
+            self.generator,
             color=_COLORS[self.color_index],
         )
         # Recalculate path for the maze the animation just built
@@ -236,7 +236,6 @@ class MazeDisplay:
 
     def render(self) -> str:
         """Build the ASCII representation of the current maze.
-
         Returns a multi-line string ready to print to the terminal.
         """
         path_cells = self.path_cells if self.show_path else None
@@ -247,6 +246,7 @@ class MazeDisplay:
             self.generator.get_entry(),
             self.generator.get_exit(),
             path_cells,
+            self.generator.get_pattern(),
         )
 
         # Apply ANSI colors

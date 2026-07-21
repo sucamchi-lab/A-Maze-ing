@@ -18,11 +18,13 @@ def get_pattern(
     pattern_height = len(PATTERN_42)
     pattern_width = len(PATTERN_42[0])
 
+    # If the maze is too small to fit the pattern, return an empty set.
     if maze_width < pattern_width or maze_height < pattern_height:
         return set()
     elif maze_width <= 8 or maze_height <= 6:
         return set()
 
+    # Calculate the starting coordinates to center the pattern in the maze.
     start_x = (maze_width - pattern_width) // 2
     start_y = (maze_height - pattern_height) // 2
 
@@ -31,6 +33,7 @@ def get_pattern(
 
     cells: Set[Tuple[int, int]] = set()
 
+    # Iterate over the pattern and add the coordinates of the '1' cells.
     for pattern_y, row in enumerate(PATTERN_42):
         for pattern_x, value in enumerate(row):
             if value == "1":

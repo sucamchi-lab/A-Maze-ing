@@ -32,16 +32,16 @@ def shortest_path(
         for move, dx, dy, wall_bit in DIRECTIONS:
             nx = x + dx
             ny = y + dy
-            # Avoids move on impossible tiles
+            # Avoids moving to impossible tiles
             if not (0 <= nx < width and 0 <= ny < height):
                 continue
-            # Avoids run walls through
+            # Avoids running through walls
             if walls[y][x] & wall_bit:
                 continue
-            # Avoid visit tiles that has been already visited
+            # Avoids visiting tiles that have been already visited
             if (nx, ny) in visited:
                 continue
-            # If no conditions are meet, the tile is added to the visited list,
+            # The tile is added to the visited list,
             # the parent dictionary and the double ended queue
             visited.add((nx, ny))
             parent[(nx, ny)] = ((x, y), move)
@@ -55,9 +55,9 @@ def rebuild_path(
     map_exit: Tuple[int, int]
 ) -> str:
     """
-    This function start at the end and recreates the solution returning
-    a string that indicates, by order, the cardinal points from the begining
-    to the end
+    This function starts at the exit and returns to the entry,
+    using the parent dictionary. The result is a
+    string that indicates the cardinal points from the entry to the exit.
     """
     current = map_exit
     path = ""
