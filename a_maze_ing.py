@@ -95,6 +95,8 @@ def main() -> None:
         sys.exit(1)
 
     perfect = cfg["PERFECT"].upper() == "TRUE"
+    if not perfect and cfg["PERFECT"].upper() != "FALSE":
+        print("Warning - Invalid boolean expression, default to false")
 
     try:
         generator = MazeGenerator(
