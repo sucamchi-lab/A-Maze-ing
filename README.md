@@ -1,4 +1,4 @@
-*This project has been created as part of the 42 curriculum by lupalomi y scamlett.*
+*This project has been created as part of the 42 curriculum by lupalomi & scamlett.*
 
 # A-maze-ing
 
